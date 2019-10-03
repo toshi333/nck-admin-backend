@@ -31,7 +31,7 @@ class EstimateViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         queryset = models.Estimate.objects.all()
-        serializer = serializers.EstimateTableSerializer(queryset, many=True)
+        serializer = serializers.EstimateListSerializer(queryset, many=True)
         return Response(serializer.data)
 
 

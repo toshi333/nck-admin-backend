@@ -6,7 +6,7 @@ class Project(models.Model):
     """プロジェクト（案件）
     """
 
-    CATEGORYS = ((1, '社外'), (2, '社内'))
+    CATEGORYS = (('社外', '社外'), ('社内', '社内'))
 
     # 主キーuuid
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)

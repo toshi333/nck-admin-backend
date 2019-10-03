@@ -39,10 +39,6 @@ class EstimateSerializer(WritableNestedModelSerializer):
     """見積伝票処理用（全データ）
     """
 
-    # ユーザー名
-    user = UsernameSerializer()
-    # 顧客名
-    customer = CustomerListSerializer()
     # 購入を追加
     purchases = EstimatePurchaseSerializer(many=True, allow_null=True)
     # タスクを追加
@@ -53,14 +49,14 @@ class EstimateSerializer(WritableNestedModelSerializer):
         fields = ('id', 'project', 'name', 'user', 'customer', 'date', 'price', 'description', 'purchases', 'tasks')
 
 
-class EstimateTableSerializer(WritableNestedModelSerializer):
+class EstimateListSerializer(serializers.ModelSerializer):
     """見積一覧用（簡易データ）
     """
 
-    # 担当者と顧客はidではなく名称を表示する
-    user = serializers.CharField(read_only=True)
-    customer = serializers.CharField(read_only=True)
+    # ユーザー名と顧客名を追加する
+    user_name = serializers.StringRelatedField(source='user')
+    customer_name = serializers.StringRelatedField(source='customer')
 
     class Meta:
         model = models.Estimate
-        fields = ('id', 'project', 'name', 'user', 'customer', 'date', 'price')
+        fields = ('id', 'project', 'name', 'user', 'user_name', 'customer_name', 'customer', 'date', 'price')
