@@ -5,6 +5,7 @@ from . import models
 from . import serializers
 from rest_framework.permissions import IsAuthenticated
 
+
 class TeamList(ListAPIView):
     """チームの階層構造を取得
     """
@@ -36,7 +37,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     # ログイン時のみアクセス可
     permission_classes = (IsAuthenticated,)
-    
+
     # 全件検索
     queryset = models.Customer.objects.all()
     serializer_class = serializers.CustomerSerializer

@@ -13,12 +13,13 @@ class UserListFilter(filters.FilterSet):
 
     # フィルタの定義（ここで定めた項目で検索条件が指定出来るようになる）
     code = filters.CharFilter(field_name="code", lookup_expr='contains')
-    last_name = filters.CharFilter(field_name="last_name", lookup_expr='contains')
+    last_name = filters.CharFilter(
+        field_name="last_name", lookup_expr='contains')
     team = filters.CharFilter(field_name="team", lookup_expr='exact')
 
     class Meta:
         model = User
-        fields = ['code', 'team'] 
+        fields = ['code', 'team']
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -29,7 +30,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+
     filter_class = UserListFilter
     ordering_fields = ['code']
     ordering = ['code']

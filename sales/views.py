@@ -55,7 +55,7 @@ class EstimateTaskViewSet(viewsets.ModelViewSet):
 
     # ログイン時のみアクセス可
     permission_classes = (IsAuthenticated,)
-    
+
     # 全件検索
     queryset = models.EstimateTask.objects.all()
     serializer_class = serializers.EstimateTaskSerializer

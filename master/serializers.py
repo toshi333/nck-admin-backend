@@ -13,7 +13,8 @@ class TeamTreeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Team
-        fields = ('id', 'parentTeam', 'name', 'manager', 'description', 'subteams')
+        fields = ('id', 'parentTeam', 'name',
+                  'manager', 'description', 'subteams')
 
 
 class TeamSerializer(serializers.ModelSerializer):
