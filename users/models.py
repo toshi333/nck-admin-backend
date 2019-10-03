@@ -6,10 +6,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.contrib.auth.base_user import BaseUserManager
 import uuid
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
-    """ユーザーマネージャー."""
+    """ユーザーマネージャー
+    """
 
     use_in_migrations = True
 
@@ -44,19 +46,22 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """カスタムユーザーモデル."""
+    """カスタムユーザーモデル
+    """
 
     # 主キーuuid
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
-
+    # Email
     email = models.EmailField(_('メール'), unique=True)
+    # 社員No
     code = models.CharField(_('コード'), max_length=10, blank=True)
-
+    # 氏名
     first_name = models.CharField(_('名'), max_length=30, blank=True)
+    # 姓
     last_name = models.CharField(_('性'), max_length=150, blank=True)
-
-    avatar = models.ImageField(upload_to="avatar", blank=True, null=True)
-
+    # アバター画像
+    avatar = models.ImageField(upload_to="avatar", blank=True, null=True, default=settings.MEDIA_URL+'/avatar/default.jpg')
+    # 所属チーム
     team = models.ForeignKey(
         'master.Team',
         blank=True,
@@ -64,13 +69,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         related_name='team_members',
         on_delete=models.SET_NULL
     )
-
+    # システム管理者権限
     is_staff = models.BooleanField(
         _('管理者'),
         default=False,
         help_text=_(
             'Designates whether the user can log into this admin site.'),
     )
+    # 在籍フラグ
     is_active = models.BooleanField(
         _('有効'),
         default=True,
@@ -79,6 +85,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'Unselect this instead of deleting accounts.'
         ),
     )
+    # データ登録日
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     objects = UserManager()

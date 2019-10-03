@@ -6,8 +6,9 @@ app_name = 'users'
 
 user_router = DefaultRouter()
 
-# チームマスタ
+# ユーザーマスタ用
 user_router.register(r'user', views.UserViewSet)
+# ログイン者のプロフィール用
 user_router.register(r'profile', views.UserProfileViewSet)
 
 urlpatterns = [

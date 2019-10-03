@@ -8,10 +8,10 @@ from rest_auth.registration.views import SocialLoginView
 
 
 class UserListFilter(filters.FilterSet):
-    """社員一覧検索用
+    """社員一覧で使う検索条件の定義
     """
 
-    # フィルタの定義
+    # フィルタの定義（ここで定めた項目で検索条件が指定出来るようになる）
     code = filters.CharFilter(field_name="code", lookup_expr='contains')
     last_name = filters.CharFilter(field_name="last_name", lookup_expr='contains')
     team = filters.CharFilter(field_name="team", lookup_expr='exact')
