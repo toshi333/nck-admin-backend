@@ -3,6 +3,15 @@ from rest_framework_recursive.fields import RecursiveField
 from . import models
 
 
+class CorporateSerializer(serializers.ModelSerializer):
+    """企業情報取得用
+    """
+
+    class Meta:
+        model = models.Corporate
+        fields = ('uuid', 'name')
+
+
 class TeamTreeSerializer(serializers.ModelSerializer):
     """チームツリー取得用
     django-rest-framework-recursive

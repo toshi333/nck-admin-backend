@@ -28,12 +28,20 @@ class UserViewSet(viewsets.ModelViewSet):
 
     # ログイン時のみアクセス可
     permission_classes = (IsAuthenticated,)
-    queryset = User.objects.all()
+    # 所属企業の情報のみ取得
+
     serializer_class = UserSerializer
 
     filter_class = UserListFilter
     ordering_fields = ['code']
     ordering = ['code']
+
+    def get_queryset(self):
+        if self.request.user.corporate is None:
+            # 企業idがnullの場合はログインユーザー本人の情報のみ取得
+            return User.objects.filter(pk=self.request.user.id)
+        # 企業idがある場合は同企業の情報のみを取得
+        return User.objects.filter(corporate=self.request.user.corporate)
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -42,8 +50,11 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     # ログイン時のみアクセス可
     permission_classes = (IsAuthenticated,)
-    queryset = User.objects.all()
     serializer_class = UserProfileSerializer
+
+    def get_queryset(self):
+        # ログインユーザー本人の情報のみ取得
+        return User.objects.filter(pk=self.request.user.id)
 
 
 class GoogleLogin(SocialLoginView):

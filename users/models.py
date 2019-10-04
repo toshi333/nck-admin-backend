@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('性'), max_length=150, blank=True)
     # アバター画像
     avatar = models.ImageField(upload_to="avatar", blank=True,
-                               null=True, default=settings.MEDIA_URL+'/avatar/default.jpg')
+                               null=True, default='avatar/default.jpg')
     # 所属チーム
     team = models.ForeignKey(
         'master.Team',
@@ -71,6 +71,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         related_name='team_members',
         on_delete=models.SET_NULL
     )
+
+    # 所属企業
+    corporate = models.ForeignKey(
+        'master.Corporate',
+        db_index=True,
+        blank=True,
+        null=True,
+        related_name='corporate_members',
+        on_delete=models.SET_NULL
+    )
+
     # システム管理者権限
     is_staff = models.BooleanField(
         _('管理者'),
