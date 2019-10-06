@@ -1,52 +1,63 @@
 from django.db import models
-import uuid
+from common.models import CommonInfo
 
 
-class Project(models.Model):
+class Project(CommonInfo):
     """プロジェクト（案件）
     """
 
     CATEGORYS = (('社外', '社外'), ('社内', '社内'))
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
+    # プロジェクトコード（作番）
     code = models.CharField(max_length=10)
+    # 件名
     name = models.CharField(max_length=200)
+    # 分類
     category = models.CharField(max_length=10, choices=CATEGORYS)
-    customer = models.ForeignKey('master.Customer', related_name='customer_projects', on_delete=models.PROTECT)
-    team = models.ForeignKey('master.Team', related_name='team_projects', on_delete=models.SET_DEFAULT, default='不明')
+    # 顧客
+    customer = models.ForeignKey(
+        'master.Customer',
+        related_name='customer_projects',
+        on_delete=models.PROTECT)
+    # 所属
+    team = models.ForeignKey(
+        'master.Team',
+        related_name='team_projects',
+        on_delete=models.SET_DEFAULT,
+        default='不明')
+    # 説明
     description = models.CharField(max_length=200, blank=True, null=True)
     estimate_price = models.IntegerField()
     estimate_date = models.DateField()
     closed_flg = models.BooleanField(default=False)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     def __str__(self):
         return self.name
 
 
-class Task(models.Model):
+class Task(CommonInfo):
     """作業タスク
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=50, blank=True, null=True)
+
     def __str__(self):
         return self.name
 
 
-class Result(models.Model):
+class Result(CommonInfo):
     """作業実績
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
-    task = models.ForeignKey('works.Task', related_name='task_work_results', on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(
+        'works.Task',
+        related_name='task_work_results',
+        on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=50, blank=True, null=True)
-    user = models.ForeignKey('users.User', related_name='user_work_results', on_delete=models.PROTECT)
+    user = models.ForeignKey(
+        'users.User',
+        related_name='user_work_results',
+        on_delete=models.PROTECT)
     date = models.DateField()
     hours = models.IntegerField()
 

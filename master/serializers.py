@@ -9,7 +9,7 @@ class CorporateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Corporate
-        fields = ('uuid', 'name')
+        fields = ('id', 'name')
 
 
 class TeamTreeSerializer(serializers.ModelSerializer):

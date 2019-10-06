@@ -1,29 +1,48 @@
 from django.db import models
-import uuid
+from common.models import CommonInfo
 
 
-class Order(models.Model):
-    """受注
+class BaseForm(CommonInfo):
+    """伝票情報共通モデル
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
+    FORM_STATUS = ((1, '下書き'), (2, '申請中'), (3, '差戻し'), (4, '決裁済'), (9, '中止'))
+
+    # 伝票種類
+    form_type = models.CharField(max_length=10, blank=True)
     # プロジェクト
-    project = models.ForeignKey('works.Project', related_name='project_orders', on_delete=models.PROTECT)
-    # 受注名
+    project = models.ForeignKey(
+        'works.Project',
+        blank=True,
+        null=True,
+        related_name='project_orders',
+        on_delete=models.PROTECT)
+    # 顧客名
+    customer = models.ForeignKey(
+        'master.Customer',
+        related_name='customer_orders',
+        on_delete=models.PROTECT)
+    # 件名
     name = models.CharField(max_length=50)
     # 担当者
     user = models.ForeignKey('users.User', related_name='user_orders', on_delete=models.PROTECT)
-    # 顧客名
-    customer = models.ForeignKey('master.Customer', related_name='customer_orders', on_delete=models.PROTECT)
-    # 受注日
-    date = models.DateField()
-    # 受注金額
+    # 合計金額
     price = models.IntegerField(default=0)
+    # 説明
+    description = models.CharField(blank=True, null=True, max_length=200)
+    # 状態
+    status = models.IntegerField(choices=FORM_STATUS, default=1)
+
+    def __str__(self):
+        return self.name
+
+
+class Order(BaseForm):
+    """受注
+    """
+
     # 納期
     delivery_date = models.DateField()
-    # 説明
-    description = models.CharField(max_length=200)
     # 売上フラグ
     sales_flg = models.BooleanField(default=False)
     # 売上日
@@ -31,50 +50,22 @@ class Order(models.Model):
     # 売上金額
     sales_price = models.IntegerField(default=0)
 
-    # 作成日時
-    created_at = models.DateTimeField(auto_now_add=True)
-    # 更新日時
-    updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
-
-
-class Purchase(models.Model):
-    """購入
+class Purchase(BaseForm):
+    """購入伝票
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
-    # プロジェクトid
-    project = models.ForeignKey('works.Project', related_name='project_purchases', on_delete=models.PROTECT)
-    # 件名
-    name = models.CharField(max_length=50)
-    # 担当者
-    user = models.ForeignKey('users.User', related_name='user_purchases', on_delete=models.PROTECT)
-    # 顧客名
-    customer = models.ForeignKey('master.Customer', related_name='customer_purchases', on_delete=models.PROTECT)
-    # 作成日
-    date = models.DateField()
-    # 説明
-    description = models.CharField(max_length=200)
+    PURCHASE_CATEGORY = ((1, '設備'), (2, '研究開発'), (3, 'その他'),)
 
-    # 作成日時
-    created_at = models.DateTimeField(auto_now_add=True)
-    # 更新日時
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
+    # 分類
+    category = models.IntegerField(choices=PURCHASE_CATEGORY, default=1)
 
 
-class PurchaseList(models.Model):
+class PurchaseList(CommonInfo):
     """購入品リスト
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
-    # 購入id
+    # 購入伝票
     purchase = models.ForeignKey('sales.Purchase', on_delete=models.CASCADE)
     # 品名
     name = models.CharField(max_length=50)
@@ -91,44 +82,29 @@ class PurchaseList(models.Model):
         return self.name
 
 
-class Estimate(models.Model):
-    """見積
+class Estimate(BaseForm):
+    """見積伝票
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
-    # プロジェクトid
-    project = models.ForeignKey('works.Project', related_name='project_estimates', on_delete=models.PROTECT)
-    # 件名
-    name = models.CharField(max_length=50)
-    # 担当者
-    user = models.ForeignKey('users.User', related_name='user_estimates', on_delete=models.PROTECT)
-    # 顧客名
-    customer = models.ForeignKey('master.Customer', related_name='customer_estimates', on_delete=models.PROTECT)
-    # 見積日
-    date = models.DateField()
-    # 見積金額
-    price = models.IntegerField(default=0)
-    # 説明
-    description = models.CharField(max_length=200)
+    PURCHASE_CATEGORY = ((1, '一括'), (2, '派遣'), (3, '継続保守'), (4, '購入代行'), (5, 'その他'))
 
-    # 作成日時
-    created_at = models.DateTimeField(auto_now_add=True)
-    # 更新日時
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
+    # 分類
+    category = models.IntegerField(choices=PURCHASE_CATEGORY, default=1)
+    # 提出予定日
+    submit_schedule = models.DateField(blank=True, null=True)
+    # 原価
+    cost = models.IntegerField(blank=True, default=0)
 
 
-class EstimatePurchase(models.Model):
+class EstimatePurchase(CommonInfo):
     """見積購入リスト
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     # 見積id
-    estimate = models.ForeignKey('sales.Estimate', related_name='purchases', on_delete=models.CASCADE)
+    estimate = models.ForeignKey(
+        'sales.Estimate',
+        related_name='purchases',
+        on_delete=models.CASCADE)
     # 品名
     name = models.CharField(max_length=50)
     # 数量
@@ -144,20 +120,25 @@ class EstimatePurchase(models.Model):
         return self.name
 
 
-class EstimateTask(models.Model):
+class EstimateTask(CommonInfo):
     """見積タスクリスト
     """
 
-    # 主キーuuid
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     # 見積id
     estimate = models.ForeignKey('sales.Estimate', related_name='tasks', on_delete=models.CASCADE)
-    # 品名
+    # 件名
     name = models.CharField(max_length=50)
     # 工数
     time = models.IntegerField(default=0)
     # 担当者
-    user = models.ForeignKey('users.User', blank=True, null=True, related_name='user_estimatetasks', on_delete=models.SET_NULL)
+    user = models.ForeignKey(
+        'users.User',
+        blank=True,
+        null=True,
+        related_name='user_estimatetasks',
+        on_delete=models.SET_NULL)
+    # メモ
+    memo = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name

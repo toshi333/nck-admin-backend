@@ -1,8 +1,31 @@
-from rest_framework import serializers
-from users.serializers import UsernameSerializer
-from master.serializers import CustomerListSerializer
 from drf_writable_nested import WritableNestedModelSerializer
+from rest_framework import serializers
+
+from users.serializers import UsernameSerializer
 from . import models
+
+
+class BaseFormSerializer(serializers.ModelSerializer):
+    """共通伝票
+    """
+    # ユーザー名と顧客名を追加する
+    user_name = serializers.StringRelatedField(source='user')
+    customer_name = serializers.StringRelatedField(source='customer')
+
+    class Meta:
+        model = models.BaseForm
+        fields = (
+            'id',
+            'form_type',
+            'status',
+            'project',
+            'customer',
+            'customer_name',
+            'name',
+            'price',
+            'user',
+            'user_name')
+
 
 class OrderSerializer(serializers.ModelSerializer):
     """受注伝票
@@ -23,16 +46,13 @@ class EstimatePurchaseSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'quantity', 'price', 'amount', 'description')
 
 
-class EstimateTaskSerializer(WritableNestedModelSerializer):
+class EstimateTaskSerializer(serializers.ModelSerializer):
     """見積タスク
     """
 
-    # ユーザー名
-    user = UsernameSerializer()
-
     class Meta:
         model = models.EstimateTask
-        fields = ('id', 'name', 'time', 'user')
+        fields = ('id', 'name', 'time', 'user', 'memo')
 
 
 class EstimateSerializer(WritableNestedModelSerializer):
@@ -40,13 +60,14 @@ class EstimateSerializer(WritableNestedModelSerializer):
     """
 
     # 購入を追加
-    purchases = EstimatePurchaseSerializer(many=True, allow_null=True)
+    purchases = EstimatePurchaseSerializer(many=True, required=False, allow_null=True)
     # タスクを追加
-    tasks = EstimateTaskSerializer(many=True, allow_null=True)
+    tasks = EstimateTaskSerializer(many=True, required=False, allow_null=True)
 
     class Meta:
         model = models.Estimate
-        fields = ('id', 'project', 'name', 'user', 'customer', 'date', 'price', 'description', 'purchases', 'tasks')
+        fields = ('id', 'form_type', 'project', 'name', 'user', 'customer',
+                  'price', 'description', 'purchases', 'tasks')
 
 
 class EstimateListSerializer(serializers.ModelSerializer):
@@ -59,4 +80,5 @@ class EstimateListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Estimate
-        fields = ('id', 'project', 'name', 'user', 'user_name', 'customer_name', 'customer', 'date', 'price')
+        fields = ('id', 'project', 'name', 'user', 'user_name',
+                  'customer_name', 'customer', 'price')

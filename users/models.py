@@ -3,10 +3,8 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
-from django.utils import timezone
 from django.contrib.auth.base_user import BaseUserManager
-import uuid
-from django.conf import settings
+from common.models import CommonInfo
 
 
 class UserManager(BaseUserManager):
@@ -45,24 +43,24 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, CommonInfo):
     """カスタムユーザーモデル
     """
 
-    # 主キーuuid
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     # Email
-    email = models.EmailField(_('メール'), unique=True)
+    email = models.EmailField(unique=True)
     # 社員No
-    code = models.CharField(_('コード'), max_length=10, blank=True)
+    code = models.CharField(max_length=10, blank=True)
     # 氏名
-    first_name = models.CharField(_('名'), max_length=30, blank=True)
+    first_name = models.CharField(max_length=50, blank=True)
     # 姓
-    last_name = models.CharField(_('性'), max_length=150, blank=True)
+    last_name = models.CharField(max_length=50, blank=True)
     # アバター画像
-    avatar = models.ImageField(upload_to="avatar", blank=True,
-                               null=True, default='avatar/default.jpg')
+    avatar = models.ImageField(
+        upload_to="avatar",
+        blank=True,
+        null=True,
+        default='avatar/default.jpg')
     # 所属チーム
     team = models.ForeignKey(
         'master.Team',
@@ -71,35 +69,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         related_name='team_members',
         on_delete=models.SET_NULL
     )
-
-    # 所属企業
-    corporate = models.ForeignKey(
-        'master.Corporate',
-        db_index=True,
-        blank=True,
-        null=True,
-        related_name='corporate_members',
-        on_delete=models.SET_NULL
-    )
-
     # システム管理者権限
-    is_staff = models.BooleanField(
-        _('管理者'),
-        default=False,
-        help_text=_(
-            'Designates whether the user can log into this admin site.'),
-    )
+    is_staff = models.BooleanField(default=False,)
     # 在籍フラグ
-    is_active = models.BooleanField(
-        _('有効'),
-        default=True,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
-    )
-    # データ登録日
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    is_active = models.BooleanField(default=True)
 
     objects = UserManager()
 

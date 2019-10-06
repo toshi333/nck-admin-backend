@@ -13,8 +13,7 @@ class UserListFilter(filters.FilterSet):
 
     # フィルタの定義（ここで定めた項目で検索条件が指定出来るようになる）
     code = filters.CharFilter(field_name="code", lookup_expr='contains')
-    last_name = filters.CharFilter(
-        field_name="last_name", lookup_expr='contains')
+    last_name = filters.CharFilter(field_name="last_name", lookup_expr='contains')
     team = filters.CharFilter(field_name="team", lookup_expr='exact')
 
     class Meta:
@@ -28,8 +27,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     # ログイン時のみアクセス可
     permission_classes = (IsAuthenticated,)
-    # 所属企業の情報のみ取得
-
     serializer_class = UserSerializer
 
     filter_class = UserListFilter
