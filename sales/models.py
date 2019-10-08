@@ -25,7 +25,8 @@ class BaseForm(CommonInfo):
     # 件名
     name = models.CharField(max_length=50)
     # 担当者
-    user = models.ForeignKey('users.User', related_name='user_orders', on_delete=models.PROTECT)
+    user = models.ForeignKey(
+        'users.User', related_name='user_orders', on_delete=models.PROTECT)
     # 合計金額
     price = models.IntegerField(default=0)
     # 説明
@@ -86,7 +87,8 @@ class Estimate(BaseForm):
     """見積伝票
     """
 
-    PURCHASE_CATEGORY = ((1, '一括'), (2, '派遣'), (3, '継続保守'), (4, '購入代行'), (5, 'その他'))
+    PURCHASE_CATEGORY = ((1, '一括'), (2, '派遣'), (3, '継続保守'),
+                         (4, '購入代行'), (5, 'その他'))
 
     # 分類
     category = models.IntegerField(choices=PURCHASE_CATEGORY, default=1)
@@ -105,16 +107,21 @@ class EstimatePurchase(CommonInfo):
         'sales.Estimate',
         related_name='purchases',
         on_delete=models.CASCADE)
+    # 行番
+    row_num = models.IntegerField(blank=True)
     # 品名
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, blank=True, null=True)
     # 数量
     quantity = models.IntegerField(default=0)
-    # 単価
-    price = models.IntegerField(default=0)
-    # 金額
-    amount = models.IntegerField(default=0)
-    # 説明
-    description = models.CharField(max_length=200)
+    # 仕入単価
+    purchase_price = models.IntegerField(default=0)
+    # 見積単価
+    estimate_price = models.IntegerField(default=0)
+    # メモ
+    memo = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        ordering = ['estimate', 'row_num']
 
     def __str__(self):
         return self.name
@@ -125,9 +132,14 @@ class EstimateTask(CommonInfo):
     """
 
     # 見積id
-    estimate = models.ForeignKey('sales.Estimate', related_name='tasks', on_delete=models.CASCADE)
+    estimate = models.ForeignKey(
+        'sales.Estimate', related_name='tasks', on_delete=models.CASCADE)
+    # 行番
+    row_num = models.IntegerField(blank=True)
     # 件名
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, blank=True, null=True)
+    # 見積単価
+    estimate_price = models.IntegerField(default=0)
     # 工数
     time = models.IntegerField(default=0)
     # 担当者
@@ -139,6 +151,9 @@ class EstimateTask(CommonInfo):
         on_delete=models.SET_NULL)
     # メモ
     memo = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        ordering = ['estimate', 'row_num']
 
     def __str__(self):
         return self.name

@@ -43,7 +43,8 @@ class EstimatePurchaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.EstimatePurchase
-        fields = ('id', 'name', 'quantity', 'price', 'amount', 'description')
+        fields = ('id', 'row_num', 'name', 'quantity',
+                  'purchase_price', 'estimate_price', 'memo')
 
 
 class EstimateTaskSerializer(serializers.ModelSerializer):
@@ -52,7 +53,8 @@ class EstimateTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.EstimateTask
-        fields = ('id', 'name', 'time', 'user', 'memo')
+        fields = ('id', 'row_num', 'name',
+                  'estimate_price', 'time', 'user', 'memo')
 
 
 class EstimateSerializer(WritableNestedModelSerializer):
@@ -60,7 +62,8 @@ class EstimateSerializer(WritableNestedModelSerializer):
     """
 
     # 購入を追加
-    purchases = EstimatePurchaseSerializer(many=True, required=False, allow_null=True)
+    purchases = EstimatePurchaseSerializer(
+        many=True, required=False, allow_null=True)
     # タスクを追加
     tasks = EstimateTaskSerializer(many=True, required=False, allow_null=True)
 
