@@ -6,7 +6,7 @@ class BaseForm(CommonInfo):
     """伝票情報共通モデル
     """
 
-    FORM_STATUS = ((1, '下書き'), (2, '申請中'), (3, '差戻し'), (4, '決裁済'), (9, '中止'))
+    FORM_STATUS = ((1, '下書き'), (2, '申請中'), (3, '差戻し'), (4, '承認済'), (9, 'キャンセル'))
 
     # 伝票種類
     form_type = models.CharField(max_length=10, blank=True)
@@ -112,11 +112,11 @@ class EstimatePurchase(CommonInfo):
     # 品名
     name = models.CharField(max_length=50, blank=True, null=True)
     # 数量
-    quantity = models.IntegerField(default=0)
+    quantity = models.IntegerField(blank=True, default=0)
     # 仕入単価
-    purchase_price = models.IntegerField(default=0)
+    purchase_price = models.IntegerField(blank=True, default=0)
     # 見積単価
-    estimate_price = models.IntegerField(default=0)
+    estimate_price = models.IntegerField(blank=True, default=0)
     # メモ
     memo = models.CharField(max_length=100, blank=True, null=True)
 
@@ -139,9 +139,9 @@ class EstimateTask(CommonInfo):
     # 件名
     name = models.CharField(max_length=50, blank=True, null=True)
     # 見積単価
-    estimate_price = models.IntegerField(default=0)
+    estimate_price = models.IntegerField(blank=True, default=0)
     # 工数
-    time = models.IntegerField(default=0)
+    time = models.IntegerField(blank=True, default=0)
     # 担当者
     user = models.ForeignKey(
         'users.User',

@@ -69,7 +69,7 @@ class EstimateSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = models.Estimate
-        fields = ('id', 'form_type', 'project', 'name', 'user', 'customer',
+        fields = ('id', 'form_type', 'status', 'project', 'name', 'user', 'customer',
                   'price', 'description', 'purchases', 'tasks')
 
 
