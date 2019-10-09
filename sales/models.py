@@ -69,7 +69,7 @@ class PurchaseList(CommonInfo):
     # 購入伝票
     purchase = models.ForeignKey('sales.Purchase', on_delete=models.CASCADE)
     # 品名
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, blank=True, null=True)
     # 数量
     quantity = models.IntegerField(default=0)
     # 単価
